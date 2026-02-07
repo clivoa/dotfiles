@@ -1,0 +1,1 @@
+oh-my-posh init pwsh --config C:\Users\clivoa\AppData\Local\Programs\oh-my-posh\themes\dracula.omp.json | Invoke-Expression 
