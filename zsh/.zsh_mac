@@ -1,0 +1,38 @@
+# ------------------------------
+# Spaceship Prompt
+# ------------------------------
+source /opt/homebrew/opt/spaceship/spaceship.zsh
+ZSH_THEME="spaceship"
+
+# ------------------------------
+# Zsh Completion System
+# ------------------------------
+autoload -Uz compinit
+compinit
+
+# ------------------------------
+# Interactive Completion Menu
+# ------------------------------
+zmodload zsh/complist
+zstyle ':completion:*' menu select
+
+# ------------------------------
+# Dracula Colors for Completion
+# ------------------------------
+# Explicação:
+# ma = trecho que deu match → azul acinzentado (Dracula comment)
+# di = diretórios → roxo Dracula
+# fi = arquivos normais → cyan Dracula
+# sb = highlight do item selecionado no menu → current-line Dracula
+zstyle ':completion:*:default' list-colors \
+"ma=48;5;60;38;5;255" \
+"di=38;5;141" \
+"fi=38;5;117" \
+"sb=48;5;237;38;5;255"
+
+# This is for openvpn
+export PATH="/opt/homebrew/Cellar/openvpn/2.6.17/sbin:$PATH"
+
+# brew vim
+alias vim=$(find /opt/homebrew/Cellar/vim -name vim -type f | sort -Vr | head -n 1)
+
