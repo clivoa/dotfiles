@@ -1,0 +1,40 @@
+# ------------------------------
+# Tema (combina com tmux/zsh)
+# ------------------------------
+theme = Dracula
+
+# ------------------------------
+# Transparência + blur (macOS)
+# ------------------------------
+background-opacity = 0.92
+background-blur-radius = 20
+
+# ------------------------------
+# Fonte (Nerd Font: ícones do Spaceship e do dracula/tmux)
+# ------------------------------
+font-family = Hack Nerd Font
+font-size = 13
+
+# ------------------------------
+# Janela
+# ------------------------------
+window-padding-x = 10
+window-padding-y = 10
+macos-titlebar-style = tabs
+
+# ------------------------------
+# Cursor
+# ------------------------------
+cursor-style = block
+cursor-style-blink = false
+
+# ------------------------------
+# Shell integration
+# ------------------------------
+shell-integration-features = cursor,sudo,title
+
+# ------------------------------
+# Abre o tmux automaticamente
+# ------------------------------
+# -A: anexa à sessão "main" se já existir, senão cria
+command = /opt/homebrew/bin/tmux new-session -A -s main
