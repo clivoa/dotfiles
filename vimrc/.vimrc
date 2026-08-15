@@ -1,25 +1,28 @@
-" vim-bootstrap b990cad
+" vim-bootstrap 2025-08-23 19:22:28
 
 "*****************************************************************************
-"" Vim-PLug core
+"" Vim-Plug core
 "*****************************************************************************
-if has('vim_starting')
-  set nocompatible               " Be iMproved
+let vimplug_exists=expand('~/.vim/autoload/plug.vim')
+if has('win32')&&!has('win64')
+  let curl_exists=expand('C:\Windows\Sysnative\curl.exe')
+else
+  let curl_exists=expand('curl')
 endif
 
-let vimplug_exists=expand('~/.vim/autoload/plug.vim')
-
-let g:vim_bootstrap_langs = "c,python,ruby"
+let g:vim_bootstrap_langs = ""
 let g:vim_bootstrap_editor = "vim"				" nvim or vim
+let g:vim_bootstrap_theme = "dracula"
+let g:vim_bootstrap_frams = ""
 
 if !filereadable(vimplug_exists)
-  if !executable("curl")
+  if !executable(curl_exists)
     echoerr "You have to install curl or first install vim-plug yourself!"
     execute "q!"
   endif
   echo "Installing Vim-Plug..."
   echo ""
-  silent !\curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  silent exec "!"curl_exists" -fLo " . shellescape(vimplug_exists) . " --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
   let g:not_finish_vimplug = "yes"
 
   autocmd VimEnter * PlugInstall
@@ -40,14 +43,15 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'airblade/vim-gitgutter'
 Plug 'vim-scripts/grep.vim'
 Plug 'vim-scripts/CSApprox'
-Plug 'bronson/vim-trailing-whitespace'
 Plug 'Raimondi/delimitMate'
 Plug 'majutsushi/tagbar'
-Plug 'scrooloose/syntastic'
+Plug 'dense-analysis/ale'
 Plug 'Yggdroot/indentLine'
-Plug 'avelino/vim-bootstrap-updater'
-Plug 'sheerun/vim-polyglot'
+Plug 'editor-bootstrap/vim-bootstrap-updater'
+Plug 'tpope/vim-rhubarb' " required by fugitive to :GBrowse
 Plug 'dracula/vim', { 'as': 'dracula' }
+
+
 if isdirectory('/usr/local/opt/fzf')
   Plug '/usr/local/opt/fzf' | Plug 'junegunn/fzf.vim'
 else
@@ -64,42 +68,13 @@ Plug 'Shougo/vimproc.vim', {'do': g:make}
 Plug 'xolox/vim-misc'
 Plug 'xolox/vim-session'
 
-if v:version >= 703
-  Plug 'Shougo/vimshell.vim'
-endif
-
-if v:version >= 704
-  "" Snippets
-  Plug 'SirVer/ultisnips'
-endif
-
+"" Snippets
+Plug 'SirVer/ultisnips'
 Plug 'honza/vim-snippets'
-
-"" Color
-Plug 'tomasr/molokai'
 
 "*****************************************************************************
 "" Custom bundles
 "*****************************************************************************
-
-" c
-Plug 'vim-scripts/c.vim', {'for': ['c', 'cpp']}
-Plug 'ludwig/split-manpage.vim'
-
-
-" python
-"" Python Bundle
-Plug 'davidhalter/jedi-vim'
-Plug 'raimon49/requirements.txt.vim', {'for': 'requirements'}
-
-
-" ruby
-Plug 'tpope/vim-rails'
-Plug 'tpope/vim-rake'
-Plug 'tpope/vim-projectionist'
-Plug 'thoughtbot/vim-rspec'
-Plug 'ecomba/vim-ruby-refactoring'
-
 
 "*****************************************************************************
 "*****************************************************************************
@@ -122,14 +97,12 @@ filetype plugin indent on
 set encoding=utf-8
 set fileencoding=utf-8
 set fileencodings=utf-8
-set bomb
-set binary
 set ttyfast
 
 "" Fix backspace indent
 set backspace=indent,eol,start
 
-"" Tabs. May be overriten by autocmd rules
+"" Tabs. May be overridden by autocmd rules
 set tabstop=4
 set softtabstop=0
 set shiftwidth=4
@@ -146,10 +119,6 @@ set hlsearch
 set incsearch
 set ignorecase
 set smartcase
-
-"" Directories for swp files
-set nobackup
-set noswapfile
 
 set fileformats=unix,dos,mac
 
@@ -173,9 +142,15 @@ set ruler
 set number
 
 let no_buffers_menu=1
-if !exists('g:not_finish_vimplug')
-  colorscheme dracula
-endif
+let g:dracula_colorterm = 0
+colorscheme dracula
+
+
+" Better command line completion
+set wildmenu
+
+" mouse support
+set mouse=a
 
 set mousemodel=popup
 set t_Co=256
@@ -192,7 +167,7 @@ else
 
   " IndentLine
   let g:indentLine_enabled = 1
-  let g:indentLine_concealcursor = 0
+  let g:indentLine_concealcursor = ''
   let g:indentLine_char = '┆'
   let g:indentLine_faster = 1
 
@@ -215,7 +190,9 @@ endif
 
 "" Disable the blinking cursor.
 set gcr=a:blinkon0
+
 set scrolloff=3
+
 
 "" Status bar
 set laststatus=2
@@ -241,8 +218,8 @@ endif
 
 " vim-airline
 let g:airline_theme = 'powerlineish'
-let g:airline#extensions#syntastic#enabled = 1
 let g:airline#extensions#branch#enabled = 1
+let g:airline#extensions#ale#enabled = 1
 let g:airline#extensions#tabline#enabled = 1
 let g:airline#extensions#tagbar#enabled = 1
 let g:airline_skip_empty_sections = 1
@@ -264,13 +241,13 @@ cnoreabbrev Qall qall
 
 "" NERDTree configuration
 let g:NERDTreeChDirMode=2
-let g:NERDTreeIgnore=['\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
+let g:NERDTreeIgnore=['node_modules','\.rbc$', '\~$', '\.pyc$', '\.db$', '\.sqlite$', '__pycache__']
 let g:NERDTreeSortOrder=['^__\.py$', '\/$', '*', '\.swp$', '\.bak$', '\~$']
 let g:NERDTreeShowBookmarks=1
 let g:nerdtree_tabs_focus_on_files=1
 let g:NERDTreeMapOpenInTabSilent = '<RightMouse>'
 let g:NERDTreeWinSize = 50
-set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite
+set wildignore+=*/tmp/*,*.so,*.swp,*.zip,*.pyc,*.db,*.sqlite,*node_modules/
 nnoremap <silent> <F2> :NERDTreeFind<CR>
 nnoremap <silent> <F3> :NERDTreeToggle<CR>
 
@@ -280,16 +257,15 @@ let Grep_Default_Options = '-IR'
 let Grep_Skip_Files = '*.log *.db'
 let Grep_Skip_Dirs = '.git node_modules'
 
-" vimshell.vim
-let g:vimshell_user_prompt = 'fnamemodify(getcwd(), ":~")'
-let g:vimshell_prompt =  '$ '
-
 " terminal emulation
-if g:vim_bootstrap_editor == 'nvim'
-  nnoremap <silent> <leader>sh :terminal<CR>
-else
-  nnoremap <silent> <leader>sh :VimShellCreate<CR>
-endif
+nnoremap <silent> <leader>sh :terminal<CR>
+
+
+"*****************************************************************************
+"" Commands
+"*****************************************************************************
+" remove trailing whitespaces
+command! FixWhitespace :%s/\s\+$//e
 
 "*****************************************************************************
 "" Functions
@@ -342,13 +318,13 @@ noremap <Leader>v :<C-u>vsplit<CR>
 
 "" Git
 noremap <Leader>ga :Gwrite<CR>
-noremap <Leader>gc :Gcommit<CR>
-noremap <Leader>gsh :Gpush<CR>
-noremap <Leader>gll :Gpull<CR>
-noremap <Leader>gs :Gstatus<CR>
-noremap <Leader>gb :Gblame<CR>
-noremap <Leader>gd :Gvdiff<CR>
-noremap <Leader>gr :Gremove<CR>
+noremap <Leader>gc :Git commit --verbose<CR>
+noremap <Leader>gsh :Git push<CR>
+noremap <Leader>gll :Git pull<CR>
+noremap <Leader>gs :Git<CR>
+noremap <Leader>gb :Git blame<CR>
+noremap <Leader>gd :Gvdiffsplit<CR>
+noremap <Leader>gr :GRemove<CR>
 
 " session management
 nnoremap <leader>so :OpenSession<Space>
@@ -391,6 +367,8 @@ endif
 cnoremap <C-P> <C-R>=expand("%:p:h") . "/" <CR>
 nnoremap <silent> <leader>b :Buffers<CR>
 nnoremap <silent> <leader>e :FZF -m<CR>
+"Recovery commands from history through FZF
+nmap <leader>y :History:<CR>
 
 " snippets
 let g:UltiSnipsExpandTrigger="<tab>"
@@ -398,14 +376,8 @@ let g:UltiSnipsJumpForwardTrigger="<tab>"
 let g:UltiSnipsJumpBackwardTrigger="<c-b>"
 let g:UltiSnipsEditSplit="vertical"
 
-" syntastic
-let g:syntastic_always_populate_loc_list=1
-let g:syntastic_error_symbol='✗'
-let g:syntastic_warning_symbol='⚠'
-let g:syntastic_style_error_symbol = '✗'
-let g:syntastic_style_warning_symbol = '⚠'
-let g:syntastic_auto_loc_list=1
-let g:syntastic_aggregate_errors = 1
+" ale
+let g:ale_linters = {}
 
 " Tagbar
 nmap <silent> <F4> :TagbarToggle<CR>
@@ -459,94 +431,11 @@ vnoremap J :m '>+1<CR>gv=gv
 vnoremap K :m '<-2<CR>gv=gv
 
 "" Open current line on GitHub
-nnoremap <Leader>o :.Gbrowse<CR>
+nnoremap <Leader>o :.GBrowse<CR>
 
 "*****************************************************************************
 "" Custom configs
 "*****************************************************************************
-
-" c
-autocmd FileType c setlocal tabstop=4 shiftwidth=4 expandtab
-autocmd FileType cpp setlocal tabstop=4 shiftwidth=4 expandtab
-
-
-" python
-" vim-python
-augroup vimrc-python
-  autocmd!
-  autocmd FileType python setlocal expandtab shiftwidth=4 tabstop=8 colorcolumn=79
-      \ formatoptions+=croq softtabstop=4
-      \ cinwords=if,elif,else,for,while,try,except,finally,def,class,with
-augroup END
-
-" jedi-vim
-let g:jedi#popup_on_dot = 0
-let g:jedi#goto_assignments_command = "<leader>g"
-let g:jedi#goto_definitions_command = "<leader>d"
-let g:jedi#documentation_command = "K"
-let g:jedi#usages_command = "<leader>n"
-let g:jedi#rename_command = "<leader>r"
-let g:jedi#show_call_signatures = "0"
-let g:jedi#completions_command = "<C-Space>"
-let g:jedi#smart_auto_mappings = 0
-
-" syntastic
-let g:syntastic_python_checkers=['python', 'flake8']
-
-" vim-airline
-let g:airline#extensions#virtualenv#enabled = 1
-
-" Syntax highlight
-" Default highlight is better than polyglot
-let g:polyglot_disabled = ['python']
-let python_highlight_all = 1
-
-
-" ruby
-let g:rubycomplete_buffer_loading = 1
-let g:rubycomplete_classes_in_global = 1
-let g:rubycomplete_rails = 1
-
-augroup vimrc-ruby
-  autocmd!
-  autocmd BufNewFile,BufRead *.rb,*.rbw,*.gemspec setlocal filetype=ruby
-  autocmd FileType ruby set tabstop=2|set shiftwidth=2|set expandtab softtabstop=2
-augroup END
-
-let g:tagbar_type_ruby = {
-    \ 'kinds' : [
-        \ 'm:modules',
-        \ 'c:classes',
-        \ 'd:describes',
-        \ 'C:contexts',
-        \ 'f:methods',
-        \ 'F:singleton methods'
-    \ ]
-\ }
-
-" RSpec.vim mappings
-map <Leader>t :call RunCurrentSpecFile()<CR>
-map <Leader>s :call RunNearestSpec()<CR>
-map <Leader>l :call RunLastSpec()<CR>
-map <Leader>a :call RunAllSpecs()<CR>
-
-" For ruby refactory
-if has('nvim')
-  runtime! macros/matchit.vim
-else
-  packadd! matchit
-endif
-
-" Ruby refactory
-nnoremap <leader>rap  :RAddParameter<cr>
-nnoremap <leader>rcpc :RConvertPostConditional<cr>
-nnoremap <leader>rel  :RExtractLet<cr>
-vnoremap <leader>rec  :RExtractConstant<cr>
-vnoremap <leader>relv :RExtractLocalVariable<cr>
-nnoremap <leader>rit  :RInlineTemp<cr>
-vnoremap <leader>rrlv :RRenameLocalVariable<cr>
-vnoremap <leader>rriv :RRenameInstanceVariable<cr>
-vnoremap <leader>rem  :RExtractMethod<cr>
 
 
 "*****************************************************************************
@@ -596,4 +485,3 @@ else
   let g:airline_symbols.readonly = ''
   let g:airline_symbols.linenr = ''
 endif
-hi Normal ctermbg=none

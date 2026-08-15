@@ -1,0 +1,6 @@
+[commit]
+	gpgsign = true
+[user]
+	signingkey = BFCBBE5225945724
+	name = Caio Lopes
+	email = 3012357+clivoa@users.noreply.github.com
