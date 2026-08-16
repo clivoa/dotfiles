@@ -80,6 +80,30 @@ source <(fzf --zsh)
 eval "$(zoxide init zsh)"
 
 # ------------------------------
+# DeepSeek via Claude Code (endpoint Anthropic-compatible)
+# ------------------------------
+# Docs: https://api-docs.deepseek.com/quick_start/agent_integrations/claude_code/
+# `claude` (sem sufixo) continua usando os modelos Claude/Anthropic normalmente.
+# A API key NÃO fica versionada: defina DEEPSEEK_API_KEY em ~/.zsh_secrets
+# (ex.: export DEEPSEEK_API_KEY="sk-...")
+[ -f ~/.zsh_secrets ] && source ~/.zsh_secrets
+
+claude-deepseek() {
+  if [ -z "$DEEPSEEK_API_KEY" ]; then
+    echo "DEEPSEEK_API_KEY não definida — defina em ~/.zsh_secrets" >&2
+    return 1
+  fi
+  ANTHROPIC_BASE_URL="https://api.deepseek.com/anthropic" \
+  ANTHROPIC_AUTH_TOKEN="$DEEPSEEK_API_KEY" \
+  ANTHROPIC_MODEL="deepseek-v4-pro" \
+  ANTHROPIC_DEFAULT_OPUS_MODEL="deepseek-v4-pro" \
+  ANTHROPIC_DEFAULT_SONNET_MODEL="deepseek-v4-pro" \
+  ANTHROPIC_DEFAULT_HAIKU_MODEL="deepseek-v4-flash" \
+  CLAUDE_CODE_SUBAGENT_MODEL="deepseek-v4-flash" \
+  claude "$@"
+}
+
+# ------------------------------
 # Syntax Highlighting (deve ser o último source do arquivo)
 # ------------------------------
 source /opt/homebrew/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
